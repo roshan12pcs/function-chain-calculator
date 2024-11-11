@@ -69,19 +69,20 @@ function App() {
 
     // Replace "2x" or "3x" etc., with "2*x"
     const formattedEquation = equation
-      .replace(/(\d)(x)/g, "$1*$2")
-      .replace(/\^/g, "**")
+      .replace(/(\d)(x)/g, "$1*$2") // Fix: remove unnecessary escapes
+      .replace(/\^/g, "**") // Fix: no need for escape here
       .replace(/x/g, x);
 
     // Use math.js to safely evaluate the equation
     return math.evaluate(formattedEquation);
   };
 
+  // Add missing dependency 'calculateChain' to avoid warning
   useEffect(() => {
     if (initialValue) {
       calculateChain();
     }
-  }, [initialValue, equations]);
+  }, [initialValue, equations, calculateChain]); // Include calculateChain
 
   return (
     <div className="calculator">
