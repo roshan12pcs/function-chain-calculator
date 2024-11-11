@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
-import math from "mathjs"; // Import math.js
+import * as math from "mathjs";
 
 const functionOrder = [1, 2, 4, 5, 3];
 
