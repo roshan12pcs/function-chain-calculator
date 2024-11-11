@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import "./App.css";
 import * as math from "mathjs";
 
@@ -46,7 +46,8 @@ function App() {
     setEquations(updatedEquations);
   };
 
-  const calculateChain = () => {
+  // Move calculateChain inside useEffect or use useCallback
+  const calculateChain = useCallback(() => {
     let currentValue = parseFloat(initialValue);
     if (isNaN(currentValue)) {
       setOutput("Invalid input");
@@ -62,10 +63,10 @@ function App() {
     } catch (error) {
       setOutput("Error in equation");
     }
-  };
+  }, [initialValue, equations]);
 
   const evaluateEquation = (equation, x) => {
-    if (!equation || !/^[\d\+\-\*/\^x\s]*$/.test(equation)) return x;
+    if (!equation || !/^[\d+\-*/^x\s]*$/.test(equation)) return x;
 
     // Replace "2x" or "3x" etc., with "2*x"
     const formattedEquation = equation
@@ -77,12 +78,11 @@ function App() {
     return math.evaluate(formattedEquation);
   };
 
-  // Add missing dependency 'calculateChain' to avoid warning
   useEffect(() => {
     if (initialValue) {
       calculateChain();
     }
-  }, [initialValue, equations, calculateChain]); // Include calculateChain
+  }, [initialValue, equations, calculateChain]); // Include calculateChain in dependencies
 
   return (
     <div className="calculator">
