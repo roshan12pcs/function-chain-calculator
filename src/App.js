@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
+import math from "mathjs"; // Import math.js
 
 const functionOrder = [1, 2, 4, 5, 3];
 
@@ -36,18 +37,17 @@ function App() {
   const [output, setOutput] = useState(0);
 
   const handleInitialValueChange = (e) => {
-    setInitialValue(e.target.value);
-    calculateChain(e.target.value, equations);
+    const value = e.target.value;
+    setInitialValue(value);
   };
 
   const handleEquationChange = (id, equation) => {
     const updatedEquations = { ...equations, [id]: equation };
     setEquations(updatedEquations);
-    calculateChain(initialValue, updatedEquations);
   };
 
-  const calculateChain = (initialVal, eqs) => {
-    let currentValue = parseFloat(initialVal);
+  const calculateChain = () => {
+    let currentValue = parseFloat(initialValue);
     if (isNaN(currentValue)) {
       setOutput("Invalid input");
       return;
@@ -55,7 +55,7 @@ function App() {
 
     try {
       functionOrder.forEach((fnNum) => {
-        const equation = eqs[fnNum];
+        const equation = equations[fnNum];
         currentValue = evaluateEquation(equation, currentValue);
       });
       setOutput(currentValue);
@@ -72,8 +72,16 @@ function App() {
       .replace(/(\d)(x)/g, "$1*$2")
       .replace(/\^/g, "**")
       .replace(/x/g, x);
-    return Function(`"use strict"; return (${formattedEquation})`)();
+
+    // Use math.js to safely evaluate the equation
+    return math.evaluate(formattedEquation);
   };
+
+  useEffect(() => {
+    if (initialValue) {
+      calculateChain();
+    }
+  }, [initialValue, equations]);
 
   return (
     <div className="calculator">
